@@ -9,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -91,12 +90,6 @@ type CreateSubscriptionInput struct {
 }
 
 func (c *Client) CreateSubscription(ctx context.Context, input CreateSubscriptionInput) (*Subscription, error) {
-	logrus.WithFields(logrus.Fields{
-		"client_id":   c.cfg.ClientID,
-		"active_days": input.ActiveDays,
-		"notify_url":  input.NotifyURL,
-	}).Info("telstrasms: creating/updating subscription")
-
 	d, err := json.Marshal(input)
 	if err != nil {
 		return nil, errors.Wrap(err, "telstrasms.Client.CreateSubscription: couldn't serialise input")
@@ -137,10 +130,6 @@ func (c *Client) CreateSubscription(ctx context.Context, input CreateSubscriptio
 }
 
 func (c *Client) GetSubscription(ctx context.Context) (*Subscription, error) {
-	logrus.WithFields(logrus.Fields{
-		"client_id": c.cfg.ClientID,
-	}).Info("telstrasms: fetching subscription")
-
 	req, err := http.NewRequest(http.MethodGet, baseURL+"/provisioning/subscriptions", nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "telstrasms.Client.GetSubscription: couldn't construct request")
@@ -217,18 +206,6 @@ type SendSMSResponse struct {
 }
 
 func (c *Client) SendSMS(ctx context.Context, input SendSMSInput) (*Subscription, error) {
-	logrus.WithFields(logrus.Fields{
-		"client_id":          c.cfg.ClientID,
-		"to":                 input.To,
-		"from":               input.From,
-		"body":               input.Body,
-		"validity":           input.ValidityInMinutes,
-		"scheduled_delivery": input.ScheduledDeliveryInMinutes,
-		"notify_url":         input.NotifyURL,
-		"reply_request":      input.ReplyRequest,
-		"priority":           input.Priority,
-	}).Info("telstrasms: sending sms")
-
 	d, err := json.Marshal(input)
 	if err != nil {
 		return nil, errors.Wrap(err, "telstrasms.Client.CreateSubscription: couldn't serialise input")
@@ -269,10 +246,6 @@ type SMS struct {
 }
 
 func (c *Client) GetSMS(ctx context.Context) (*SMS, error) {
-	logrus.WithFields(logrus.Fields{
-		"client_id": c.cfg.ClientID,
-	}).Info("telstrasms: fetching sms")
-
 	req, err := http.NewRequest(http.MethodGet, baseURL+"/sms", nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "telstrasms.Client.GetSMS: couldn't construct request")
